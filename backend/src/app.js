@@ -20,18 +20,30 @@ const app = express();
 
 app.set('trust proxy', 1);
 
+// -----------------------------
+// CORS
+// -----------------------------
+const corsOptions = {
+  origin: config.corsOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly handle browser preflight requests
+app.options(/.*/, cors(corsOptions));
+
+// -----------------------------
 // Security headers
+// -----------------------------
 app.use(
   helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-  })
-);
-
-// CORS
-app.use(
-  cors({
-    origin: config.corsOrigin,
-    credentials: true,
+    crossOriginResourcePolicy: {
+      policy: 'cross-origin',
+    },
   })
 );
 
@@ -48,7 +60,9 @@ app.use(mongoSanitize());
 // API rate limiting
 app.use('/api', apiLimiter);
 
+// -----------------------------
 // Health check
+// -----------------------------
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -57,17 +71,23 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// -----------------------------
 // Routes
+// -----------------------------
 app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/trash', trashRoutes);
 app.use('/api/security', securityRoutes);
 
+// -----------------------------
 // 404 handler
+// -----------------------------
 app.use(notFound);
 
+// -----------------------------
 // Global error handler
+// -----------------------------
 app.use(errorHandler);
 
 module.exports = app;
