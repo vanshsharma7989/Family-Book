@@ -19,7 +19,6 @@ const {
 
 const config = require('../config/env');
 
-
 // ==========================================
 // AUTH COOKIE SETTINGS
 // ==========================================
@@ -27,10 +26,9 @@ const config = require('../config/env');
 const COOKIE_BASE = {
   httpOnly: true,
   secure: config.cookieSecure,
-  sameSite: 'lax',
+  sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
   path: '/',
 };
-
 
 // ==========================================
 // SET AUTH COOKIES
@@ -48,7 +46,6 @@ function setAuthCookies(res, accessToken, refreshToken) {
   });
 }
 
-
 // ==========================================
 // CLEAR AUTH COOKIES
 // ==========================================
@@ -57,7 +54,6 @@ function clearAuthCookies(res) {
   res.clearCookie('accessToken', COOKIE_BASE);
   res.clearCookie('refreshToken', COOKIE_BASE);
 }
-
 
 // ==========================================
 // DEVICE LABEL
@@ -70,7 +66,6 @@ function deviceLabel(req) {
     ? ua.slice(0, 180)
     : ua;
 }
-
 
 // ==========================================
 // REGISTER VALIDATION
@@ -95,7 +90,6 @@ const registerValidators = [
     .withMessage('Password must contain a number'),
 ];
 
-
 // ==========================================
 // LOGIN VALIDATION
 // ==========================================
@@ -112,7 +106,6 @@ const loginValidators = [
     .withMessage('Password is required'),
 ];
 
-
 // ==========================================
 // CHECK VALIDATION
 // ==========================================
@@ -127,7 +120,6 @@ function checkValidation(req) {
     );
   }
 }
-
 
 // ==========================================
 // REGISTER
@@ -172,7 +164,6 @@ const register = asyncHandler(async (req, res) => {
     },
   });
 });
-
 
 // ==========================================
 // LOGIN
@@ -260,7 +251,6 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
-
 // ==========================================
 // REFRESH TOKEN
 // ==========================================
@@ -321,7 +311,6 @@ const refresh = asyncHandler(async (req, res) => {
   });
 });
 
-
 // ==========================================
 // LOGOUT
 // ==========================================
@@ -355,7 +344,6 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-
 // ==========================================
 // CURRENT USER
 // ==========================================
@@ -381,7 +369,6 @@ const me = asyncHandler(async (req, res) => {
     },
   });
 });
-
 
 // ==========================================
 // FORGOT PASSWORD
@@ -443,7 +430,6 @@ const forgotPassword = asyncHandler(
     });
   }
 );
-
 
 // ==========================================
 // RESET PASSWORD
@@ -522,7 +508,6 @@ const resetPassword = asyncHandler(
     });
   }
 );
-
 
 // ==========================================
 // EXPORT
