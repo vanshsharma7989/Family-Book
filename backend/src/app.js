@@ -23,22 +23,49 @@ app.set('trust proxy', 1);
 // -----------------------------
 // CORS
 // -----------------------------
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://family-book-eosin.vercel.app',
+];
+
 const corsOptions = {
-  origin: config.corsOrigin,
+  origin: function (origin, callback) {
+    // Allow requests without an Origin header
+    // and requests from our allowed frontend origins.
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+  ],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+  ],
+
   optionsSuccessStatus: 204,
 };
 
+// Handle CORS for all requests
 app.use(cors(corsOptions));
-
-// Explicitly handle browser preflight requests
-app.options(/.*/, cors(corsOptions));
 
 // -----------------------------
 // Security headers
 // -----------------------------
+
 app.use(
   helmet({
     crossOriginResourcePolicy: {
@@ -49,20 +76,37 @@ app.use(
 
 app.use(compression());
 
+// -----------------------------
+// Body parsers
+// -----------------------------
+
 app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: '1mb',
+  })
+);
 
 app.use(cookieParser());
 
+// -----------------------------
 // Prevent NoSQL injection
+// -----------------------------
+
 app.use(mongoSanitize());
 
+// -----------------------------
 // API rate limiting
+// -----------------------------
+
 app.use('/api', apiLimiter);
 
 // -----------------------------
 // Health check
 // -----------------------------
+
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -74,20 +118,27 @@ app.get('/api/health', (req, res) => {
 // -----------------------------
 // Routes
 // -----------------------------
+
 app.use('/api/auth', authRoutes);
+
 app.use('/api/files', fileRoutes);
+
 app.use('/api/favorites', favoriteRoutes);
+
 app.use('/api/trash', trashRoutes);
+
 app.use('/api/security', securityRoutes);
 
 // -----------------------------
 // 404 handler
 // -----------------------------
+
 app.use(notFound);
 
 // -----------------------------
 // Global error handler
 // -----------------------------
+
 app.use(errorHandler);
 
 module.exports = app;
