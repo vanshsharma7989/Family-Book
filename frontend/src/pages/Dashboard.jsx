@@ -1,81 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { Files, Image, FileText, HardDrive, Upload as UploadIcon, Star } from 'lucide-react';
-// import api from '../api/axios';
-// import DashboardCard from '../components/DashboardCard';
-// import LoadingSpinner from '../components/LoadingSpinner';
-// import EmptyState from '../components/EmptyState';
-// import { formatBytes, formatDate } from '../utils/format';
-// import { useAuth } from '../context/AuthContext';
-
-// export default function Dashboard() {
-//   const { user } = useAuth();
-//   const [stats, setStats] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     api
-//       .get('/files/stats')
-//       .then((res) => setStats(res.data.data))
-//       .finally(() => setLoading(false));
-//   }, []);
-
-//   if (loading) {
-//     return (
-//       <div className="flex h-64 items-center justify-center">
-//         <LoadingSpinner size="lg" />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="fade-in">
-//       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-//         <div>
-//           <h1 className="text-2xl font-bold">Welcome back, {user?.name?.split(' ')[0]}</h1>
-//           <p className="text-sm text-slate-500">Here's what's in your vault</p>
-//         </div>
-//         <Link to="/upload" className="btn-primary">
-//           <UploadIcon className="h-4 w-4" /> Quick Upload
-//         </Link>
-//       </div>
-
-//       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-//         <DashboardCard icon={Files} label="Total Files" value={stats.totalFiles} tint="brand" />
-//         <DashboardCard icon={Image} label="Photos" value={stats.totalPhotos} tint="violet" />
-//         <DashboardCard icon={FileText} label="Documents + PDFs" value={stats.totalDocuments + stats.totalPdfs} tint="amber" />
-//         <DashboardCard icon={HardDrive} label="Storage Used" value={formatBytes(stats.storageUsed)} tint="emerald" />
-//         <DashboardCard icon={Star} label="Favorites" value={stats.favoritesCount} tint="amber" />
-//       </div>
-
-//       <div className="mt-8">
-//         <h2 className="mb-3 text-lg font-semibold">Recent Uploads</h2>
-//         {stats.recentUploads.length === 0 ? (
-//           <EmptyState
-//             icon={UploadIcon}
-//             title="No files yet"
-//             description="Upload your first photo or document to get started."
-//             action={
-//               <Link to="/upload" className="btn-primary">
-//                 Upload files
-//               </Link>
-//             }
-//           />
-//         ) : (
-//           <div className="card divide-y divide-slate-100 dark:divide-slate-800">
-//             {stats.recentUploads.map((f) => (
-//               <div key={f._id} className="flex items-center justify-between px-4 py-3 text-sm">
-//                 <span className="truncate font-medium">{f.originalName}</span>
-//                 <span className="shrink-0 text-slate-400">{formatDate(f.createdAt)}</span>
-//               </div>
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -97,6 +19,7 @@ import api from '../api/axios';
 import DashboardCard from '../components/DashboardCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
+import Footer from '../components/Footer';
 
 import {
   formatBytes,
@@ -626,7 +549,6 @@ export default function Dashboard() {
                         items-center
                         justify-center
                         rounded-xl
-
                         ${
                           isPhoto
                             ? 'bg-blue-50 text-blue-500'
@@ -860,9 +782,7 @@ export default function Dashboard() {
                   </span>
 
                   <span className="shrink-0 text-slate-400">
-                    {formatDate(
-                      file.createdAt
-                    )}
+                    {formatDate(file.createdAt)}
                   </span>
 
                 </div>
@@ -885,9 +805,15 @@ export default function Dashboard() {
   // ===================================================
 
   return (
-    <>
-      <MobileDashboard />
-      <DesktopDashboard />
-    </>
+    <div className="flex min-h-screen flex-col">
+
+      <div className="flex-1">
+        <MobileDashboard />
+        <DesktopDashboard />
+      </div>
+
+      <Footer />
+
+    </div>
   );
 }
